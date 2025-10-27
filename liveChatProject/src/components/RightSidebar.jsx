@@ -1,22 +1,27 @@
 import React, { useContext } from 'react'
 import assets from '../assets/assets'
 import { messagesContext } from '../../context/messagesContext'
+import { AuthContext } from '../../context/AuthContext'
 
-const RightSidebar = () => {
+  const RightSidebar = () => {
   const { selectedUser, messages } = useContext(messagesContext)
+  const { onlineUsers} = useContext(AuthContext)
 
   if (!selectedUser) return null
 
   return (
-    <div className='relative hidden md:flex flex-col h-full'>
+    <div className='relative hidden md:flex flex-col h-[80vh]'>
       {/* Profile Section */}
-      <div className='flex flex-col items-center justify-center gap-1.5 p-5'>
+      <div className='flex-shrink-0 flex flex-col items-center justify-center gap-1.5 p-5'>
         <img 
           className='w-24 h-24 rounded-full object-cover' 
           src={selectedUser.profilePic || assets.avatar_icon} 
           alt={selectedUser.fullName}
         />
         <h2 className='text-gray-300 font-semibold'>
+          {
+            onlineUsers.includes(selectedUser) && <span className='w-2 h-2 rounded-full bg-green-600'></span>
+          }
           {selectedUser.fullName}
         </h2>
         <p className='w-40 text-xs text-center text-gray-400'>
@@ -26,8 +31,9 @@ const RightSidebar = () => {
       </div>
 
       {/* Media Section */}
-      <div className='px-3 flex-1 min-h-0 overflow-y-auto'>
-        <h2 className='text-white mb-2'>Media</h2>
+      <h2 className='text-white mb-2'>Media</h2>
+      <div className='px-3 flex-1 max-h-[50%] min-h-0 overflow-y-auto '>
+        
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-2.5   '>
           {messages
             .filter(msg => msg.image)
@@ -44,7 +50,7 @@ const RightSidebar = () => {
       </div>
 
       {/* Logout Button */}
-      <div className='p-3 mt-auto'>
+      <div className='p-3 pt-0 absolute bottom-0 w-full mt-auto'>
         <button className='bg-gradient-to-r from-purple-500 to-purple-900 w-full p-3 rounded-full text-white hover:opacity-90 transition-opacity'>
           Logout
         </button>

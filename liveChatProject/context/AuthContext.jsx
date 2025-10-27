@@ -15,6 +15,7 @@ export const AuthProvider =({children})=>{
     const [authUser, setAuthUser] = useState(null)
     const [onlineUsers, setOnlineUsers] = useState([])
     const [socket, setSocket] = useState(null)
+    const [groupData, setGroupData] = useState([])
 
 
     const checkAuth = async()=>{
@@ -91,6 +92,41 @@ export const AuthProvider =({children})=>{
        
     }
 
+    const createGroup = async(groupDetails) =>{
+        try {
+
+            const {data} = await axios.post("/api/auth/create_group",
+                groupDetails
+            )
+            if(data.success){
+                setGroupData(data.groupData)
+                toast.success(data.message)
+                return {data: data.groupData,
+                    success:true
+                }
+            }
+        } catch (error) {
+            console.log("group creation error", error)
+            toast.error(error.message)
+        }
+    }
+
+     const updateGroupProfile = async(groupDetails) =>{
+        try {
+
+            const {data} = await axios.put("/api/auth/update_profile",{
+                groupDetails
+            })
+            if(data.success){
+                setGroupData(data.groupData)
+                toast.success(data.message)
+                return data.groupData
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
     useEffect(()=>{
         if(token){
             axios.defaults.headers.common["token"] = token
@@ -105,10 +141,13 @@ export const AuthProvider =({children})=>{
         onlineUsers,
         socket,
         userState,
+        groupData,
         login,
         logout,
         updateProfile,
-        setUserState
+        setUserState,
+        createGroup,
+        updateGroupProfile
     }
     return(
         <AuthContext.Provider value={value}>

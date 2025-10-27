@@ -7,6 +7,7 @@ import connectDB from "./config/mongooseConfig.js";
 import useRouter from "./Routes/userRoutes.js";
 import MessageRouter from "./Routes/messageRoutes.js";
 import { Server } from "socket.io";
+import { isGroupMember } from "./config/utils.js";
 
 // create app
 const app = express();
@@ -32,12 +33,26 @@ io.on("connection", (socket) => {
     //emit online users to all connected users
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+    socket.on('joinGroup', async(groupId) => {
+    
+    const isMember = await  isGroupMember(groupId, userId);
+
+    if (isMember) {
+        // Add the socket to the room named by the group ID
+        socket.join(groupId);
+        console.log(`Socket ${socket.id} joined room: ${groupId}`);
+    }
+    });
+
+
     socket.on("disconnect", () => {
         console.log("user Disconnected", userId);
         delete userSocketMap[userId]
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
     })
 })
+
+
 
 // connect to mongodb
 await connectDB()

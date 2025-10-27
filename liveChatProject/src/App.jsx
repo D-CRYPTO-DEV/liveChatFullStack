@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import ProfilePage from './pages/ProfilePage'
 import {Toaster} from "react-hot-toast"
 import { AuthContext } from '../context/AuthContext.jsx'
+import GroupCreatePage from './pages/GroupCreatePage.jsx'
 
 const App = () => {
   const { authUser} = useContext(AuthContext)
@@ -16,7 +17,7 @@ const App = () => {
         <Route path='/' element={authUser?<HomePage/> : <Navigate to="/login"/>}/>
         <Route path='/login' element={!authUser?<LoginPage/> : <Navigate to="/"/>}/>
         <Route path='/profile' element={authUser?<ProfilePage/> : <Navigate to="/login"/>}/>
-        {/* <Route path='*' element={!authUser?<LoginPage/> : <Navigate to="/"/>}/> */}
+        <Route path='/create-group' element={authUser?<GroupCreatePage/> : <Navigate to="/login"/>}/>
       </Routes>
       
     </div>
