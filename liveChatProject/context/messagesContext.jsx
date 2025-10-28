@@ -24,7 +24,7 @@ const getUsers = async()=>{
         const {data} = await axios.get("/api/messages/messages")
         if(data.success){
             setUsers(data.users)
-            setUnseenMessages(data.unseeMessages)
+            setUnseenMessages(data.unseenMessages)
         }
     } catch (error) {
         toast.error(error.message)
@@ -57,13 +57,7 @@ const getSelectedUsersMessage = async()=>{
             })
 
             if (data.success) {
-                // Emit socket event for real-time updates
-                socket.emit('newMessage', {
-                    message: data.message,
-                    receiverId: selectedUser._id
-                })
-                
-                // Update local messages state
+               
                 setMessages(prev => [...prev, data.message])
             }
         } catch (error) {
@@ -117,15 +111,15 @@ const sendGroupMessage = async(messageData) => {
         console.log("Server response:", data);
 
         if(data.success) {
-            setGroupMessages(prevMessages => [...(prevMessages || []), data.message]);
+            // setGroupMessages(prevMessages => [...(prevMessages || []), data.message]);
             
             // Emit socket event for real-time updates
-            if (socket) {
-                socket.emit("newGroupMessage", {
-                    message: data.message,
-                    groupId: selectedGroup._id
-                });
-            }
+            // if (socket) {
+            //     socket.emit("newGroupMessage", {
+            //         message: data.message,
+            //         groupId: selectedGroup._id
+            //     });
+            // }
             
             toast.success("Message sent successfully");
             return data.message;
@@ -143,7 +137,7 @@ const sendGroupMessage = async(messageData) => {
 
 const subscribeToGroupMessage = async() =>{
     if(!socket)return
-    socket.on("newMessage",(newMessage) =>{
+    socket.on("groupMessage",async(newMessage) =>{
     if(selectedGroup && newMessage.groupId == selectedGroup._id){
         const upDate = newMessage.receiversId.find((member)=> member.groupMember.toString().toLowerCase() === authUser.toString().toLowerCase())
         if(upDate){
@@ -151,11 +145,11 @@ const subscribeToGroupMessage = async() =>{
             upDate.readAt = new Date();
         } 
         setGroupMessages((prevMessages)=>[...prevMessages, newMessage]);
-        axios.put(`/api/messages/mark/group/${newMessage._id}`)
+        await axios.put(`/api/messages/mark/group/${newMessage._id}`)
     }else{
-        setUnseenGroupMessages((prevunseeMessages) =>({
-            ...prevunseeMessages,[newMessage.groupId]:
-            prevunseeMessages[newMessage.groupId] ? prevunseeMessages[newMessage.groupId] + 1 : 1
+        setUnseenGroupMessages((prevunseenGroupMessages) =>({
+            ...prevunseenGroupMessages,[newMessage.groupId]:
+            prevunseenGroupMessages[newMessage.groupId] ? prevunseenGroupMessages[newMessage.groupId] + 1 : 1
         })
     )}
 
@@ -171,15 +165,15 @@ const unSubscribeFromGroupMessages = ()=>{
 
 const subscribeToMessage = async() =>{
     if(!socket)return
-    socket.on("newMessage",(newMessage) =>{
+    socket.on("privateMessage",async(newMessage) =>{
     if(selectedUser && newMessage.senderId == selectedUser._id){
         newMessage.seen = true;
         setMessages((prevMessages)=>[...prevMessages, newMessage]);
-        axios.put(`/api/messages//mark/${newMessage._id}`)
+        await axios.put(`/api/messages/mark/${newMessage._id}`)
     }else{
-        setUnseenMessages((prevunseeMessages) =>({
-            ...prevunseeMessages,[newMessage.senderId]:
-            prevunseeMessages[newMessage.senderId] ? prevunseeMessages[newMessage.senderId] + 1 : 1
+        setUnseenMessages((prevunseenMessages) =>({
+            ...prevunseenMessages,[newMessage.senderId]:
+            prevunseenMessages[newMessage.senderId] ? prevunseenMessages[newMessage.senderId] + 1 : 1
         })
     )}
 })
@@ -193,7 +187,15 @@ const unSubscribeToMessages = ()=>{
 
 
 
+// MessageProvider.jsx
+useEffect(() => {
+    if (socket && selectedGroup) {
+        // 1. Join the new group's room
+        console.log(`Attempting to join group room: ${selectedGroup._id}`);
+        socket.emit('joinGroup', selectedGroup._id);
 
+    }
+}, [socket, selectedGroup]);
 
 useEffect(()=>{
 subscribeToMessage()

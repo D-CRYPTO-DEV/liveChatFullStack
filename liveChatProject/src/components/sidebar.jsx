@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import assets, { userDummyData } from '../assets/assets'
+import assets from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext.jsx'
@@ -11,7 +11,7 @@ import { messagesContext } from '../../context/messagesContext.jsx'
 
 const Sidebar = () => {
     const {logout, onlineUsers} = useContext(AuthContext)
-    const {selectedUser,users,setSelectedUser,getUsers,unseenMessages,groups,getGroups,setSelectedGroup,selectedGroup} =useContext(messagesContext)
+    const {selectedUser,users,setSelectedUser,getUsers,unseenMessages,unseenGroupMessages,groups,getGroups,setSelectedGroup,selectedGroup} =useContext(messagesContext)
     const navigate = useNavigate();
 
     const [input, setInput] = useState(false)
@@ -78,12 +78,12 @@ const Sidebar = () => {
                             <p className='text-xs '>
                                 {onlineUsers.includes(user._id) ? <span className='text-green-400'>online</span >  : <span className='text-gray-400'>offline</span> }
                             </p>
-                            {/* {
-                                unseenMessages[user._id]  && <p className='text-xs h-5 w-5 flex justify-center
+                            {unseenMessages[user._id] > 0 && (
+                                <p className='text-xs h-5 w-5 flex justify-center
                                 items-center rounded-full bg-violet-500/50 absolute top-4 right-4'>
-                                    {unseenMessages[user._id].length}
+                                    {unseenMessages[user._id]}
                                 </p>
-                            } */}
+                            )}
                         </div>
                     </div>
                 
@@ -103,12 +103,12 @@ const Sidebar = () => {
                             <p className='text-xs text-white'>
                                 {group.groupName}
                             </p>
-                            {/* {
-                                unseenMessages[user._id]  && <p className='text-xs h-5 w-5 flex justify-center
+                            {unseenGroupMessages[group._id] > 0 && (
+                                <p className='text-xs h-5 w-5 flex justify-center
                                 items-center rounded-full bg-violet-500/50 absolute top-4 right-4'>
-                                    {unseenMessages[user._id].length}
+                                    {unseenGroupMessages[group._id]}
                                 </p>
-                            } */}
+                            )}
                         </div>
                     </div>
                 

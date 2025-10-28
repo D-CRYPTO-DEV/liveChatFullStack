@@ -247,7 +247,7 @@ export const availableGroups = async(req,res)=>{
         // emit message to receiver
         const receiverSocketId = userSocketMap[receiverId];
         if(receiverSocketId) {
-            io.to(receiverSocketId).emit("newMessage", newMessage);
+            io.to(receiverSocketId).emit("privateMessage", newMessage);
         }
 
         return res.status(201).json({
@@ -346,7 +346,7 @@ export const availableGroups = async(req,res)=>{
 
         // emit message to receiver
        
-        io.to(groupId).emit("newMessage", newMessage);
+        io.to(groupId).emit("groupMessage", newMessage);
        
 
         return res.status(201).json({
