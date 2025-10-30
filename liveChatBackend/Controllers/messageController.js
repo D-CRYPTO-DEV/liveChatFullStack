@@ -52,22 +52,32 @@ export const availableGroups = async(req,res)=>{
    
 
     const sidebarGroups = await GroupChat.find({groupMembers: loggedinUser});
-    // number of unseen messages
+    //senders that are not me
+   
+    const unseenGroupMessages = {
+       
+    }
 
-
-    const unseenGroupMessages = {}
-
-    const promises = sidebarGroups.map(async(group)=>{
-        const messages = await groupMessages.find({
-            senderId:group._id,
-            "receiversId.groupMember":loggedinUser,
-            "receiversId.seen":false
-        })
-
-        if(messages.length > 0){
-            unseenGroupMessages[group._id] = messages.length
+   const promises = sidebarGroups.map(async(group) => {
+    
+    // Step 3: Query for unseen messages for THIS group and THIS loggedinUser
+    const unseenCount = await groupMessages.countDocuments({
+        // Filter by the current group's ID
+        groupId: group._id, 
+        // Filter by the logged-in user and that user's 'seen' status is false
+        "receiversId": {
+             $elemMatch: {
+                groupMember: loggedinUser,
+                seen: false
+            }
         }
-    })
+    });
+
+    if(unseenCount > 0){
+        // Step 4: Store the count using the Group ID as the key
+        unseenGroupMessages[group._id] = unseenCount;
+    }
+    });
     await Promise.all(promises)
 
     return res.json({
@@ -335,7 +345,7 @@ export const availableGroups = async(req,res)=>{
         const newMessage = await groupMessages.create({
             receiversId: group.groupMembers.map(member => ({
                 groupMember: member,
-                seen: member.toString() === senderId.toString(),
+                seen: member.toString().toLowerCase() === senderId.toString().toLowerCase(),
                 readAt: member.toString() === senderId.toString() ? new Date() : null
             })),
             senderId,

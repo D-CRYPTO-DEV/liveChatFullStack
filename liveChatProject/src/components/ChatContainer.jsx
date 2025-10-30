@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 const ChatContainer = () => {
   
   const {authUser} = useContext(AuthContext)
-  const {selectedUser,getSelectedUsersMessage, messages,sendMessage,getSelectedgroupMessages,groupMessages,selectedGroup,sendGroupMessage} = useContext(messagesContext)
+  const {selectedUser,getSelectedUsersMessage, messages,sendMessage,getSelectedgroupMessages,groupMessages,setSelectedGroup,setSelectedUser,selectedGroup,sendGroupMessage} = useContext(messagesContext)
   const[input,setInput] = useState("");
   const ScrollEnd = useRef()
   const DisplayedMessage = selectedUser ? messages : groupMessages;
@@ -110,20 +110,41 @@ const ChatContainer = () => {
    
 
 
-    <div className={`relative flex flex-col ${(selectedUser || selectedGroup) ? "h-[80vh]" : "h-full"}`}>
+    <div className={`relative flex flex-col ${(selectedUser || selectedGroup) ? "h-screen md:h-[80vh]" : "h-screen md:h-full hidden md:visible " }`}>
       {
         (selectedUser || selectedGroup) ? ( 
         <div className='flex flex-col h-full'>
           {/* upper profile section of chat */}
-          <div className='flex-shrink-0 h-[12%]'>
-            <div className='flex items-center justify-between p-2'>
+          <div className='flex-shrink-0   h-[12%] md:h-[12%]'>
+            <div className='flex items-center h-full justify-between p-2'>
+              <img onClick={()=>{setSelectedUser(null), setSelectedGroup(null)}} className='w-8 h-8 rounded-full md:hidden ' src={assets.Backarrow} alt="backarrow" />
               <div className='flex items-center gap-2 pt-2 cursor-pointer'>
                 <img src={selectedUser?.profilePic ||selectedGroup?.group_profilePic || assets.avatar_icon} alt="profilePic" className='w-8 h-8   aspect-[1/1] rounded-full' />
                 <p className='text-white capitalize'>{selectedUser?.fullName || selectedGroup?.groupName}</p>
               </div>
-              <img src={assets.help_icon} className='w-6 h-6 cursor-pointer' alt="help" />
-            </div>
-            <hr className='my-2 border-t border-gray-500'/>
+              
+            {selectedUser?
+            <img src={assets.help_icon} className='w-6 h-6 cursor-pointer' alt="help" />
+            : <button className='group'>
+                <img src={assets.menu_icon} alt="Menu" className='max-h-5 cursor-pointer' />
+                <ul className=' text-white hidden group-hover:md:flex group-focus:flex flex-col gap-2 absolute top-10 right-0 z-20 w-40 p-5 rounded-md
+                bg-[#282142] border border-gray-600 '>
+                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
+                    View Members
+                  </li>
+                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
+                    add Members
+                  </li>
+                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
+                    remove Member
+                  </li>
+                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
+                    update info
+                  </li>
+                </ul>
+              </button>}
+          </div>
+            <hr className='my-0 border-t border-gray-500'/>
           </div>
           
           

@@ -11,7 +11,7 @@ import { messagesContext } from '../../context/messagesContext.jsx'
 
 const Sidebar = () => {
     const {logout, onlineUsers} = useContext(AuthContext)
-    const {selectedUser,users,setSelectedUser,getUsers,unseenMessages,unseenGroupMessages,groups,getGroups,setSelectedGroup,selectedGroup} =useContext(messagesContext)
+    const {selectedUser,users,setSelectedUser,getUsers,unseenMessages,setUnseenMessages,unseenGroupMessages,groups,getGroups,setSelectedGroup,selectedGroup} =useContext(messagesContext)
     const navigate = useNavigate();
 
     const [input, setInput] = useState(false)
@@ -31,15 +31,15 @@ const Sidebar = () => {
    
 
   return (
-    <div  className='relative overflow-hidden flex flex-col h-[80vh]'>
+    <div  className='relative overflow-hidden flex flex-col h-screen md:h-[80vh]'>
      <div className='pb-5'>
        
         <div className='flex items-center justify-between flex-shrink-0 '>
             <img src={assets.logo} alt="logo" className='max-w-40' />
-            <div className='group py-2 relative'>
+            <button className='group py-2 relative'>
                 <img src={assets.menu_icon} alt="Menu" className='max-h-5 cursor-pointer' />
                 <ul className='absolute top-full right-0 z-20 w-32 p-5 rounded-md
-                bg-[#282142] border border-gray-600 hidden text-gray-100 group-hover:block'>
+                bg-[#282142] border border-gray-600 hidden text-gray-100 group-hover:md:flex group-focus:flex flex-col gap-2 '>
                     <li onClick={()=>{navigate("/profile")}} className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
                         Edit Profile
                     </li><hr className='my-2 border-t border-gray-500'/>
@@ -51,7 +51,7 @@ const Sidebar = () => {
                         Groups
                     </li>
                 </ul>
-            </div>
+            </button>
         </div>
         <div className='flex bg-[#282142] rounded-full items-center
             py-3 px-4 mt-5 gap-2'>
@@ -66,7 +66,7 @@ const Sidebar = () => {
             <div className={`${!PersonalChats?"-translate-y-full  " : PersonalChats && "transition-transform ease-in-out translate-y-0  duration-1000" } `}>
                 {PersonalChats && filteredUsers.map((user, index) => (
             
-                    <div key={index} onClick={() => {setSelectedUser(user), setSelectedGroup(null)}} className={`relative flex items-center } gap-2 p-2 pl-4 rounded-2xl cursor-pointer max-sm *
+                    <div key={index} onClick={() => {setSelectedUser(user), setSelectedGroup(null), setUnseenMessages(prev=>({...prev,[user._id]:0}))}} className={`relative flex items-center } gap-2 p-2 pl-4 rounded-2xl cursor-pointer max-sm *
                         text-sm ${selectedUser?._id === user._id && 'bg-[#282142]/50'}`}>
                         <img src={user?.profilePic || assets.avatar_icon} alt="profile_img"
                         className='w-[35px] aspect-[1/1] rounded-full'/>
