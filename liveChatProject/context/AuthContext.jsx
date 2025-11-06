@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState,useContext } from "react";
 import axios from "axios";
 import toast from "react-hot-toast"
 import {io} from "socket.io-client"
@@ -17,6 +17,8 @@ export const AuthProvider =({children})=>{
     const [socket, setSocket] = useState(null)
     const [groupData, setGroupData] = useState([])
 
+
+    
 
     const checkAuth = async()=>{
         try {
@@ -111,16 +113,52 @@ export const AuthProvider =({children})=>{
         }
     }
 
-     const updateGroupProfile = async(groupDetails) =>{
+     const updateGroupProfile = async(selectedGroup,groupDetails) =>{
         try {
+            console.log("groupDetails in context:", groupDetails.get("group_profilePic"),selectedGroup)
 
-            const {data} = await axios.put("/api/auth/update_profile",{
-                groupDetails
+            const {data} = await axios.put(`/api/auth/update_groupProfile/${selectedGroup}`,{
+                groupName : groupDetails.get("groupName"),
+                bio : groupDetails.get("bio"),
+                group_profilePic :groupDetails.get("group_profilePic")
             })
             if(data.success){
                 setGroupData(data.groupData)
                 toast.success(data.message)
                 return data.groupData
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+    const addMembersToGroup = async(groupId, selectedMembers)=>{
+        try {
+            if(Array.isArray(selectedMembers) && selectedMembers.length === 0) return;
+            const { data} = await axios.put(`/api/auth/${groupId}`, {
+                newMemberId: selectedMembers
+            })
+            if(data.success){
+                setGroupData(data.groupData)
+                toast.success(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+            
+        
+    const removeMembersFromGroup = async(groupId, selectedMember)=>{
+        try {
+            if(!selectedMember) return;
+           
+             
+            console.log('Removing member:', selectedMember)  
+            const { data} = await axios.put(`/api/auth/remove-member/${groupId}`, {
+                memberToRemove: selectedMember
+            })
+            if(data.success){
+                setGroupData(data.groupData)
+                toast.success(data.message)
             }
         } catch (error) {
             toast.error(error.message)
@@ -147,7 +185,9 @@ export const AuthProvider =({children})=>{
         updateProfile,
         setUserState,
         createGroup,
-        updateGroupProfile
+        updateGroupProfile,
+        addMembersToGroup,
+        removeMembersFromGroup
     }
     return(
         <AuthContext.Provider value={value}>

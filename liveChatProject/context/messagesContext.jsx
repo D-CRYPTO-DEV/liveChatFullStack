@@ -17,7 +17,14 @@ export const MessageProvider = ({children})=> {
     const [unseenGroupMessages,setUnseenGroupMessages] = useState({})
     const[ groupMessages,setGroupMessages] = useState(null)
 
-    const {axios, socket, authUser} = useContext(AuthContext)
+    const {axios, socket, authUser, groupData} = useContext(AuthContext)
+
+
+    useEffect(()=>{
+        if(selectedGroup){
+            getGroups()
+        }
+    },[groupData])
 // function to get users for sidebar
 const getUsers = async()=>{
     try {
@@ -208,6 +215,75 @@ subscribeToGroupMessage()
 return unSubscribeFromGroupMessages ()
 },[socket,authUser,selectedGroup])
 
+    // Group Management Functions
+    const addMembersToGroup = async (groupId, memberIds) => {
+        try {
+            const { data } = await axios.post(`/api/messages/add-members/${groupId}`, { memberIds });
+            if (data.success) {
+                await getGroups();
+                toast.success('Members added successfully');
+                return data.group;
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+            throw error;
+        }
+    };
+
+    const removeMembersFromGroup = async (groupId, memberIds) => {
+        try {
+            const { data } = await axios.post(`/api/messages/remove-members/${groupId}`, { memberIds });
+            if (data.success) {
+                await getGroups();
+                toast.success('Members removed successfully');
+                return data.group;
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+            throw error;
+        }
+    };
+
+    const updateGroup = async (groupId, updates) => {
+        try {
+            const formData = new FormData();
+            Object.entries(updates).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    formData.append(key, value);
+                }
+            });
+
+            const { data } = await axios.put(`/api/messages/update-group/${groupId}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (data.success) {
+                await getGroups();
+                if (selectedGroup?._id === groupId) {
+                    setSelectedGroup(data.group);
+                }
+                toast.success('Group updated successfully');
+                return data.group;
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+            throw error;
+        }
+    };
+
+    const getGroupMembers = async (groupId) => {
+        try {
+            const { data } = await axios.get(`/api/messages/group-members/${groupId}`);
+            if (data.success) {
+                return data.members;
+            }
+            return [];
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+            return [];
+        }
+    };
+
     const value = {
         messages,
         users,
@@ -226,9 +302,13 @@ return unSubscribeFromGroupMessages ()
         setSelectedGroup,
         unseenGroupMessages,
         groupMessages,
-        sendGroupMessage
-
-        }
+        sendGroupMessage,
+        // Group Management Functions
+        addMembersToGroup,
+        removeMembersFromGroup,
+        updateGroup,
+        getGroupMembers
+    }
     return <messagesContext.Provider value={value}>
         {children}
     </messagesContext.Provider>

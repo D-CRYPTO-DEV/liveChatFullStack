@@ -245,7 +245,7 @@ export const createGroupController = async(req,res) =>{
 
 export const addMemberToGroupController = async(req,res)=>{
     try {
-        const groupId = req.params.id;
+        const groupId = req.params.groupId;
         const userId = req.user._id;
         const {newMemberId} = req.body;
 
@@ -265,8 +265,13 @@ export const addMemberToGroupController = async(req,res)=>{
         }
 
         await GroupChat.findByIdAndUpdate(groupId,{
-            $push: {groupMembers: newMemberId}
-        })
+            $push: {
+               groupMembers:{
+                $each: newMemberId
+                }
+            }
+        },
+        {new:true})
         res.json({
             success:true,
             message:"new member added successfully"
@@ -284,9 +289,11 @@ export const addMemberToGroupController = async(req,res)=>{
 
  export const removeMemberFromGroupController = async(req,res)=>{
     try {
-        const groupId = req.params.id;
+        const groupId = req.params.groupId;
         const userId = req.user._id;
-        const {newMemberId} = req.body;
+        const {memberToRemove} = req.body;
+        console.log("bckend details:", groupId, userId,memberToRemove)
+        const remove = memberToRemove[0];
 
         const group = await GroupChat.findById(groupId);
         if(!group){
@@ -304,7 +311,7 @@ export const addMemberToGroupController = async(req,res)=>{
         }
 
         await GroupChat.findByIdAndUpdate(groupId,{
-            $pull: {groupMembers: newMemberId}
+            $pull: {groupMembers: remove}
         })
         res.json({
             success:true,
@@ -322,9 +329,13 @@ export const addMemberToGroupController = async(req,res)=>{
 
 export const updateGroupProfileController = async(req,res) =>{
     try {
-      const groupId = req.params.id;
+      const groupId = req.params.groupId;
+       
         const userId = req.user._id;
-
+        const groupDetails = req.body;
+        const {groupName, bio, group_profilePic} = groupDetails;
+        console.log("groupId:", groupId,groupName, bio, group_profilePic);
+        const groupData = {}
         const group = await GroupChat.findById(groupId);
         if(!group){
             res.json({
@@ -340,8 +351,13 @@ export const updateGroupProfileController = async(req,res) =>{
             })
         }
 
-        if(groupName)groupDetails.groupName = groupName;
-        if(bio)groupDetails.bio = bio;
+        if(groupName){
+            console.log("Updating groupName to:", groupName);
+            groupData.groupName = groupName;
+        }
+        if(bio) {
+            groupData.bio = bio;
+        }
 
          if(group_profilePic) {
             try {
@@ -349,7 +365,7 @@ export const updateGroupProfileController = async(req,res) =>{
                     folder: "group_profilePic",
                     resource_type: "image"
                 });
-                groupDetails.group_profilePic = uploadResult.secure_url;
+                groupData.group_profilePic = uploadResult.secure_url;
             } catch (uploadError) {
                 console.error("Cloudinary upload error:", uploadError);
                 return res.status(400).json({
@@ -362,11 +378,11 @@ export const updateGroupProfileController = async(req,res) =>{
 
         // Single database update
         const updatedGroup = await GroupChat.findByIdAndUpdate(groupId,
-           groupDetails,
+           groupData,
             { new: true }
         );
 
-       
+       console.log("updatedGroup:", updatedGroup, groupData)
         return res.json({
             success: true,
             userdata: updatedGroup,

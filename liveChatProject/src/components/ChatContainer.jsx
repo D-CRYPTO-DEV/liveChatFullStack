@@ -4,6 +4,7 @@ import { messagesContext } from '../../context/messagesContext'
 import { AuthContext } from '../../context/AuthContext'
 import assets from '../assets/assets'
 import toast from 'react-hot-toast'
+import GroupActions from './GroupActions'
 
 const ChatContainer = () => {
   
@@ -110,7 +111,7 @@ const ChatContainer = () => {
    
 
 
-    <div className={`relative flex flex-col ${(selectedUser || selectedGroup) ? "h-screen md:h-[80vh]" : "h-screen md:h-full hidden md:visible " }`}>
+    <div className={`relative flex flex-col ${(selectedUser || selectedGroup) ? "h-screen z-30 md:h-[80vh]" : "h-screen md:h-full hidden md:visible " }`}>
       {
         (selectedUser || selectedGroup) ? ( 
         <div className='flex flex-col h-full'>
@@ -123,26 +124,11 @@ const ChatContainer = () => {
                 <p className='text-white capitalize'>{selectedUser?.fullName || selectedGroup?.groupName}</p>
               </div>
               
-            {selectedUser?
-            <img src={assets.help_icon} className='w-6 h-6 cursor-pointer' alt="help" />
-            : <button className='group'>
-                <img src={assets.menu_icon} alt="Menu" className='max-h-5 cursor-pointer' />
-                <ul className=' text-white hidden group-hover:md:flex group-focus:flex flex-col gap-2 absolute top-10 right-0 z-20 w-40 p-5 rounded-md
-                bg-[#282142] border border-gray-600 '>
-                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
-                    View Members
-                  </li>
-                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
-                    add Members
-                  </li>
-                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
-                    remove Member
-                  </li>
-                  <li className='rounded-full p-1.5 hover:bg-gray-700 cursor-pointer text-sm'>
-                    update info
-                  </li>
-                </ul>
-              </button>}
+            {selectedUser ? (
+              <img src={assets.help_icon} className='w-6 h-6 cursor-pointer' alt="help" />
+            ) : (
+              <GroupActions />
+            )}
           </div>
             <hr className='my-0 border-t border-gray-500'/>
           </div>

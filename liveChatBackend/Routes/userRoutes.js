@@ -13,10 +13,10 @@ useRouter.post("/signup",CreateAccController)
 useRouter.post("/login",loginController)
 useRouter.get("/auth", authMiddleWare,authenticationController)
 useRouter.put("/update_profile",authMiddleWare, updateProfileController)
-useRouter.put("/add-member",authMiddleWare, addMemberToGroupController)
+useRouter.put("/:groupId",authMiddleWare, addMemberToGroupController)
 useRouter.post("/create_group",authMiddleWare,createGroupController)
-useRouter.put("/remove-member",authMiddleWare, removeMemberFromGroupController)
-useRouter.put("/update_groupProfile",authMiddleWare, updateGroupProfileController)
+useRouter.put("/remove-member/:groupId",authMiddleWare, removeMemberFromGroupController)
+useRouter.put("/update_groupProfile/:groupId",authMiddleWare, updateGroupProfileController)
 
 
 
