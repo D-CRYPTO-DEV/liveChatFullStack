@@ -264,7 +264,7 @@ export const addMemberToGroupController = async(req,res)=>{
             })
         }
 
-        await GroupChat.findByIdAndUpdate(groupId,{
+        const newGroup = await GroupChat.findByIdAndUpdate(groupId,{
             $push: {
                groupMembers:{
                 $each: newMemberId
@@ -274,6 +274,7 @@ export const addMemberToGroupController = async(req,res)=>{
         {new:true})
         res.json({
             success:true,
+            groupData:newGroup,
             message:"new member added successfully"
         })
 
@@ -310,18 +311,19 @@ export const addMemberToGroupController = async(req,res)=>{
             })
         }
 
-        await GroupChat.findByIdAndUpdate(groupId,{
+        const newGroup = await GroupChat.findByIdAndUpdate(groupId,{
             $pull: {groupMembers: remove}
         })
         res.json({
             success:true,
+            groupData:newGroup,
             message:"new member added successfully"
         })
 
 
     }catch(error){
          res.json({
-            success:false,
+            success:false,          
             message:error.message
         })
     }

@@ -4,18 +4,20 @@ import toast from "react-hot-toast"
 import {io} from "socket.io-client"
 
 
+
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
 axios.defaults.baseURL = backend_uri
 
 export const AuthContext = createContext();
 
 export const AuthProvider =({children})=>{
+   
     const [userState, setUserState] = useState("signup")
     const [token, setToken] = useState(localStorage.getItem("token"))
     const [authUser, setAuthUser] = useState(null)
     const [onlineUsers, setOnlineUsers] = useState([])
     const [socket, setSocket] = useState(null)
-    const [groupData, setGroupData] = useState([])
+    const [groupData, setGroupData] = useState(null)
 
 
     
@@ -138,6 +140,7 @@ export const AuthProvider =({children})=>{
                 newMemberId: selectedMembers
             })
             if(data.success){
+               
                 setGroupData(data.groupData)
                 toast.success(data.message)
             }

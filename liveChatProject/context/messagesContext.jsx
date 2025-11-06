@@ -17,14 +17,20 @@ export const MessageProvider = ({children})=> {
     const [unseenGroupMessages,setUnseenGroupMessages] = useState({})
     const[ groupMessages,setGroupMessages] = useState(null)
 
-    const {axios, socket, authUser, groupData} = useContext(AuthContext)
-
-
+    const {axios, socket, authUser,groupData} = useContext(AuthContext)
+     console.log("setting selected group from auth context:", groupData,selectedGroup)
     useEffect(()=>{
-        if(selectedGroup){
-            getGroups()
+        if(selectedGroup && groupData && (groupData._id === selectedGroup._id)){
+            if(selectedGroup.groupMembers !== groupData.groupMembers){
+                console.log("setting selected group from auth context:", groupData)
+                setSelectedGroup(groupData)
+            }
+           
         }
-    },[groupData])
+    },[selectedGroup,groupData])
+
+
+   
 // function to get users for sidebar
 const getUsers = async()=>{
     try {
