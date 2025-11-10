@@ -31,7 +31,7 @@ const Sidebar = () => {
    
 
   return (
-    <div  className={`relative overflow-hidden ${selectedGroup? "hidden md:flex" :""} flex flex-col h-screen md:h-[80vh]`}>
+    <div  className={`relative overflow-hidden ${selectedGroup? "hidden md:flex" :""} flex flex-col h-[calc(100vh-10%)] md:h-[80vh]`}>
      <div className='pb-5'>
        
         <div className='flex items-center justify-between flex-shrink-0 '>
@@ -61,9 +61,10 @@ const Sidebar = () => {
             placeholder={PersonalChats?'Search friend' :"search for groups"}/>
         </div>
      </div>
-     <div className='flex-1  '>
-        <div onClick={()=>setPersonalChats(!PersonalChats)} className={`overflow-hidden text-white text-center group cursor-pointer w-full h-10 flex justify-center items-center font-bold   bg-[#282142]/50`}>{PersonalChats?"Personal Chats":"group Chats"}</div>
-            <div className={`${!PersonalChats?"-translate-y-full  " : PersonalChats && "transition-transform ease-in-out translate-y-0  duration-1000" } `}>
+     <div className='flex-1 max-h-[80%]'>
+        <div onClick={()=>setPersonalChats(!PersonalChats)} className={`overflow-hidden  text-white text-center group cursor-pointer w-full h-10 flex justify-center items-center font-bold   bg-[#282142]/50`}>{PersonalChats?"Personal Chats":"group Chats"}</div>
+            <div className=' max-h-[100%]  overflow-y-auto'>
+                <div className={`${!PersonalChats?"-translate-y-full  " : PersonalChats && " transition-transform ease-in-out translate-y-0 overflow-y-auto scroll duration-1000" } `}>
                 {PersonalChats && filteredUsers.map((user, index) => (
             
                     <div key={index} onClick={() => {setSelectedUser(user), setSelectedGroup(null), setUnseenMessages(prev=>({...prev,[user._id]:0}))}} className={`relative flex items-center } gap-2 p-2 pl-4 rounded-2xl cursor-pointer max-sm *
@@ -91,7 +92,7 @@ const Sidebar = () => {
             </div>
         
         {/* <div onClick={()=>setPersonalChats(false)} className={`text-white text-center group cursor-pointer absolute bottom-0 w-full h-10 flex justify-center items-center font-bold   bg-[#282142]/50`}></div> */}
-        <div className={`${PersonalChats?"-translate-y-full  " : !PersonalChats && "transition-transform ease-in-out translate-y-0  duration-1000" } `}>
+        <div className={`${PersonalChats?"-translate-y-full  " : !PersonalChats && " transition-transform ease-in-out translate-y-0   duration-1000" } `}>
                 {!PersonalChats && filteredGroups.map((group, index) => (
             
                     <div key={index} onClick={() => {setSelectedGroup(group),setSelectedUser(null)}} className={`relative flex items-center } gap-2 p-2 pl-4 rounded-2xl cursor-pointer max-sm *
@@ -114,6 +115,8 @@ const Sidebar = () => {
                 
                 ))}
             </div>
+            </div>
+           
      </div>
     </div>
   )

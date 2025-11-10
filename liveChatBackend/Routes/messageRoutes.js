@@ -22,6 +22,6 @@ MessageRouter.post("/send/:id", authMiddleware, messageSendingController)
 MessageRouter.post("/send-group/:groupid", authMiddleware, sendGroupMessageController)
 MessageRouter.post("/send/:groupid", authMiddleware, sendGroupMessageController)
 MessageRouter.get("/group-message/:groupid",authMiddleware,selectedgroupMessage)
-MessageRouter.put("/mark/group/:id", authMiddleware, markGroupMessageAsSeen)
+MessageRouter.put("/mark/group/:_id", authMiddleware, markGroupMessageAsSeen)
 
 export default MessageRouter;

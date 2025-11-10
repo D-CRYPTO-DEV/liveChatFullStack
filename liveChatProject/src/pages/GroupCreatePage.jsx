@@ -62,6 +62,8 @@ const GroupCreatePage = () => {
   const [showFriendsPopup, setShowFriendsPopup] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [availableFriends, setAvailableFriends] = useState([]);
+  const [creatingGroup, setCreatingGroup] = useState(false);
+
 
 
   const handleFriendSelection = (friendId) => {
@@ -85,6 +87,7 @@ const GroupCreatePage = () => {
 
   const onSubmitHandler = async (e) =>{
     e.preventDefault();
+    setCreatingGroup(true)
     try {
       const groupData = {
         groupName,
@@ -112,8 +115,10 @@ const GroupCreatePage = () => {
         // if(data.success) {
         //   toast.success("Group created successfully!");
         // }
+        
         navigate("/");
       }
+      setCreatingGroup(false)
     } catch (error) {
       toast.error("Failed to create group");
     }
@@ -147,11 +152,14 @@ const GroupCreatePage = () => {
           <button 
             type="button"
             onClick={() => setShowFriendsPopup(true)}
+           
             className="p-4 cursor-pointer rounded-xl w-full bg-[#3A3454] text-white hover:bg-[#4A4464] mb-2"
           >
             Add Friends to Group ({selectedFriends.length} selected)
           </button>
-          <button type='submit' className='p-4 cursor-pointer rounded-xl w-full bg-linear-to-br from-purple-400 to-purple-900'>
+          <button type='submit'
+           disabled={creatingGroup || selectedFriends.length === 0}
+            className='p-4 cursor-pointer rounded-xl w-full bg-linear-to-br from-purple-400 to-purple-900'>
             create
           </button>
         </form>
@@ -159,7 +167,7 @@ const GroupCreatePage = () => {
         <FriendSelectionPopup 
           isOpen={showFriendsPopup}
           onClose={() => setShowFriendsPopup(false)}
-          friends={availableFriends}
+          friends={availableFriends} 
           selectedFriends={selectedFriends}
           onSelectFriend={handleFriendSelection}
         />

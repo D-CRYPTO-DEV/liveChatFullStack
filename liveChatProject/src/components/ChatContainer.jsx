@@ -153,7 +153,7 @@ const ChatContainer = () => {
                   }
                   <div className={`${msg.senderId === authUser._id ? "ml-auto" :"mr-auto"} flex flex-col justify-center items-center`}>
                     <img  className={`w-8 h-8 aspect-[1/1] rounded-full`} src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon} alt="" />
-                    <p className='text-xs text-gray-500'>{formatMessageTime(msg.createdAt) }</p>
+                    <p className='text-xs text-gray-500'>{selectedUser?formatMessageTime(msg.createdAt): msg.senderFullName }</p>
                   </div>
 
                   </div>

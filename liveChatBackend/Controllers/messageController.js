@@ -282,6 +282,8 @@ export const availableGroups = async(req,res)=>{
         const {text, image} = req.body;
         const groupId = req.params.groupid;
         const senderId = req.user._id;
+        const senderFullName = req.user.fullName;
+        console.log("checking the full nme shows:", senderFullName)
 
 
           // Debug log to check params
@@ -339,7 +341,8 @@ export const availableGroups = async(req,res)=>{
         console.log('Creating group message with:', {
             groupMembers: group.groupMembers,
             senderId,
-            messageText
+            messageText,
+            senderfullName: senderFullName
         });
 
         const newMessage = await groupMessages.create({
@@ -349,6 +352,7 @@ export const availableGroups = async(req,res)=>{
                 readAt: member.toString() === senderId.toString() ? new Date() : null
             })),
             senderId,
+            senderFullName: senderFullName,
             groupId,
             text: messageText,
             image: imageUri
@@ -377,10 +381,10 @@ export const availableGroups = async(req,res)=>{
 
  export const markGroupMessageAsSeen = async(req,res)=>{
     try {
-        const {id} = req.params
+        const {_id} = req.params
         const userId = req.user._id
-        await groupMessages.findByIdAndUpdate(id,
-            {
+        await groupMessages.findByIdAndUpdate(_id,
+           {
                 // **Update:** Set the 'seen' and 'readAt' properties for the matching array element.
                 // The path is now 'receiversId.$[elem].seen' (no '.member')
                 'receiversId.$[elem].seen': true,

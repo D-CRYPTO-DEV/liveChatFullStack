@@ -20,6 +20,7 @@ const readStatusSchema = new mongoose.Schema({
 const MessagesSchema = new mongoose.Schema({
   groupId:{type:mongoose.Schema.Types.ObjectId,ref: "GroupChat"},
   senderId:{type:mongoose.Schema.Types.ObjectId,ref: "appUser", required:true},
+  senderFullName:{type:String, required:true},
   receiversId:[readStatusSchema],
   text:{type:String},
   image:{type:String},

@@ -10,21 +10,25 @@ const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [bio, setBio] = useState("")
   const [isDataSubmitted, setIsDataSubmitted] = useState(false)
+  const [loginState, setLoginState] = useState(false)
 
 
   const {login, userState,setUserState} = useContext(AuthContext)
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async(e) => {
     e.preventDefault();
+    setLoginState(true)
+    
     if(userState === "signup" && !isDataSubmitted){
       setIsDataSubmitted(true);
       return
     }
-    login(userState === "signup" ? "signup" :"login",{
+    await login(userState === "signup" ? "signup" :"login",{
       fullName,
       password,
       email,
       bio
     })
+    setLoginState(false);
   }
 
 
@@ -81,7 +85,7 @@ const LoginPage = () => {
       }
       {
         userState === "signup" && isDataSubmitted && (
-          <textarea rows={4} className='w-full p-2 border border-gray-500 focus:outline-none focus:ring-2
+          <textarea rows={4} className='w-full p-2 border border-gray-500 focus:outline-none focus:ring-2 
             focus:ring-indigo-500'placeholder='provide a short bio' required
             onChange={(e)=> setBio(e.target.value)} value={bio} >
 
@@ -89,7 +93,7 @@ const LoginPage = () => {
         )
       }
       
-      <button type='submit' className='p-4 cursor-pointer rounded-xl w-full bg-linear-to-br from-purple-400 to-purple-900'>
+      <button disabled ={loginState} type='submit' className={`p-4 cursor-pointer rounded-xl bg-purple w-full  ${loginState?"bg-purple-500":"bg-linear-to-br from-purple-400 to-purple-900"} `}>
         {userState === "signup" ? "create Account" : "Log in"}
       </button>
       
