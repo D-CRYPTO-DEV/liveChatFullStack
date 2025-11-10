@@ -70,7 +70,17 @@ app.use("/api/messages", MessageRouter)
 // base route (optional)
 app.get("/", (req,res) => res.send("server is running fine"))
 
+
+
+
+
+if(process.env.NODE_ENV === "production") {
 const PORT = process.env.PORT || 5000
 server.listen(PORT, () => {
     console.log("server running at PORT:" + PORT)
 })
+}
+
+
+// for development
+export default server;
