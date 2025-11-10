@@ -10,13 +10,13 @@ const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [bio, setBio] = useState("")
   const [isDataSubmitted, setIsDataSubmitted] = useState(false)
-  const [loginState, setLoginState] = useState(false)
+  // const [loginState, setLoginState] = useState(false)
 
 
   const {login, userState,setUserState} = useContext(AuthContext)
   const onSubmitHandler = async(e) => {
     e.preventDefault();
-    setLoginState(true)
+    // setLoginState(true)
     
     if(userState === "signup" && !isDataSubmitted){
       setIsDataSubmitted(true);
@@ -28,7 +28,7 @@ const LoginPage = () => {
       email,
       bio
     })
-    setLoginState(false);
+    // setLoginState(false);
   }
 
 
@@ -93,7 +93,7 @@ const LoginPage = () => {
         )
       }
       
-      <button disabled ={loginState} type='submit' className={`p-4 cursor-pointer rounded-xl bg-purple w-full  ${loginState?"bg-purple-500":"bg-linear-to-br from-purple-400 to-purple-900"} `}>
+      <button  type='submit' className={`p-4 cursor-pointer rounded-xl bg-purple w-full  bg-linear-to-br from-purple-400 to-purple-900} `}>
         {userState === "signup" ? "create Account" : "Log in"}
       </button>
       
