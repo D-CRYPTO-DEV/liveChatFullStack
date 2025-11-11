@@ -31,7 +31,7 @@ const Sidebar = () => {
    
 
   return (
-    <div  className={`relative overflow-hidden ${selectedGroup? "hidden md:flex" :""} flex flex-col h-[calc(100vh-10%)] md:h-[80vh]`}>
+    <div  className={`relative overflow-hidden ${(selectedGroup || selectedUser)? "hidden md:flex" :""} flex flex-col h-[calc(100vh-10%)] md:h-[80vh]`}>
      <div className='pb-5'>
        
         <div className='flex items-center justify-between flex-shrink-0 '>
